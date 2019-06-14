@@ -25,7 +25,7 @@ func factory() (net.Conn,error) {
 	return net.Dial("tcp","127.0.0.1:7060")
 }
 
-func TestPool(t *testing.T) {
+func UsePool() {
 	pool1 := NewPool(10, 30 ,factory)
 	defer pool1.Close()
 	var wg sync.WaitGroup
@@ -35,7 +35,7 @@ func TestPool(t *testing.T) {
 		    // connect
 			conn ,err := pool1.Get()
 			if err!=nil {
-				err1 = err
+				...
 			}
 			//send
 			_,err = conn.Write( msg )
