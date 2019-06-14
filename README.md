@@ -11,10 +11,15 @@
 
 go get -v -u github.com/rocket049/connpool
 
+或：
+
+go get -v -u gitee.com/rocket049/connpool
+
 #### 使用说明
 
 ```
 import "github.com/rocket049/connpool"
+//import "gitee.com/rocket049/connpool"
 
 func factory() (net.Conn,error) {
 	return net.Dial("tcp","127.0.0.1:7060")
