@@ -47,6 +47,12 @@ func UsePool() {
 			if err!=nil{
 				...
 			}
+			//timeout
+			if conn.Timeout() {
+				pool1.Put(conn)
+				conn ,err := pool1.Get()
+				...
+			}
 			//close
 			pool1.Put(conn)
 			wg.Done()
