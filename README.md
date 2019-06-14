@@ -9,15 +9,48 @@
 
 #### 安装教程
 
-1. xxxx
-2. xxxx
-3. xxxx
+go get -v -u github.com/rocket049/connpool
 
 #### 使用说明
 
-1. xxxx
-2. xxxx
-3. xxxx
+```
+import "github.com/rocket049/connpool"
+
+func factory() (net.Conn,error) {
+	return net.Dial("tcp","127.0.0.1:7060")
+}
+
+func TestPool(t *testing.T) {
+	pool1 := NewPool(10, 30 ,factory)
+	defer pool1.Close()
+	var wg sync.WaitGroup
+	for i:=0;i<50;i++ {
+		wg.Add(1)
+		go func(n int){
+		    // connect
+			conn ,err := pool1.Get()
+			if err!=nil {
+				err1 = err
+			}
+			//send
+			_,err = conn.Write( msg )
+			if err!=nil{
+				...
+			}
+			//recv
+			n1,err := conn.Read( buf )
+			if err!=nil{
+				...
+			}
+			//close
+			pool1.Put(conn)
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+
+}
+```
 
 #### 参与贡献
 

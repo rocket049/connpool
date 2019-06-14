@@ -17,6 +17,7 @@ func factory() (net.Conn,error) {
 
 func TestPool(t *testing.T) {
 	pool1 := NewPool(10, 30 ,factory)
+	defer pool1.Close()
 	var err1 error
 	var wg sync.WaitGroup
 	for i:=0;i<50;i++ {
