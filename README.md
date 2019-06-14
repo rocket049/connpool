@@ -26,7 +26,7 @@ func factory() (net.Conn,error) {
 }
 
 func UsePool() {
-	pool1 := NewPool(10, 30 ,factory)
+	pool1 := connpool.NewPool(10, 30 ,factory)
 	defer pool1.Close()
 	var wg sync.WaitGroup
 	for i:=0;i<50;i++ {
