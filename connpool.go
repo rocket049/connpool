@@ -106,15 +106,15 @@ func (s *Pool) Get() (*Conn, error) {
 		e := s.connections.Front()
 		res = e.Value.(*Conn)
 		s.connections.Remove(e)
-	} else {
-		return s.newConn()
+		if res.Timeout() {
+			go res.Close()
+		} else {
+			return res, nil
+		}
 	}
-	if res.Timeout() {
-		res.Close()
-		return s.newConn()
-	} else {
-		return res, nil
-	}
+
+	return s.newConn()
+
 }
 
 //Put - Put a connection back to the Pool
