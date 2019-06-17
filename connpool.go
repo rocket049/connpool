@@ -7,12 +7,14 @@ import (
 	"time"
 )
 
+//Conn Wrap of net.Conn
 type Conn struct {
 	conn     net.Conn
 	deadline time.Time
 	timeout  int
 }
 
+//Read Compatible io.Reader
 func (s *Conn) Read(p []byte) (int, error) {
 	n, err := s.conn.Read(p)
 	if err != nil {
@@ -22,6 +24,7 @@ func (s *Conn) Read(p []byte) (int, error) {
 	return n, nil
 }
 
+//Write Compatible io.Write
 func (s *Conn) Write(p []byte) (int, error) {
 	n, err := s.conn.Write(p)
 	if err != nil {
@@ -31,6 +34,7 @@ func (s *Conn) Write(p []byte) (int, error) {
 	return n, nil
 }
 
+//Close close the connection
 func (s *Conn) Close() error {
 	err := s.conn.Close()
 	s.deadline = time.Now()
@@ -42,10 +46,12 @@ func (s *Conn) setDeadline() {
 	s.conn.SetDeadline(s.deadline)
 }
 
+//Timeout Test the connection is timeout. return true/false.
 func (s *Conn) Timeout() bool {
 	return time.Now().Unix() >= s.deadline.Unix()
 }
 
+//Pool please create Pool with function NewPool
 type Pool struct {
 	lock        *sync.Mutex
 	cond        *sync.Cond
@@ -55,6 +61,10 @@ type Pool struct {
 	connections *list.List
 }
 
+//NewPool Create a new Pool struct,and initial it.
+// max - the max connection number
+// timeout - the program will use it to set deadline value
+// factory - wrap of net.Dial(...)
 func NewPool(max, timeout int, factory func() (net.Conn, error)) *Pool {
 	l := new(sync.Mutex)
 	return &Pool{lock: new(sync.Mutex), cond: sync.NewCond(l), max: max, timeout: timeout, newFunc: factory,
@@ -72,6 +82,7 @@ func (s *Pool) newConn() (*Conn, error) {
 	return &Conn{conn: conn, deadline: deadline, timeout: s.timeout}, nil
 }
 
+//Get Get a new connection from the Pool
 func (s *Pool) Get() (*Conn, error) {
 	var res *Conn
 	var wait bool
@@ -105,6 +116,7 @@ func (s *Pool) Get() (*Conn, error) {
 	}
 }
 
+//Put Put a connection back to the Pool
 func (s *Pool) Put(conn1 *Conn) {
 	var wait bool
 	s.lock.Lock()
@@ -118,6 +130,7 @@ func (s *Pool) Put(conn1 *Conn) {
 	}
 }
 
+//Close Close all connections in this Pool
 func (s *Pool) Close() {
 	e := s.connections.Front()
 	if e.Value != nil {
