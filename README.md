@@ -1,7 +1,7 @@
 # connpool
 
 #### 介绍
-一个连接池，用法参考connpool_test.go
+一个TCP连接池，用法参考connpool_test.go
 
 #### 软件架构
 软件架构说明
