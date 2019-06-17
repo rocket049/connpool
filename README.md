@@ -4,8 +4,61 @@
 一个TCP连接池，用法参考connpool_test.go
 
 #### 软件架构
-软件架构说明
+```
+type Conn
+    func (s *Conn) Close() error
+    func (s *Conn) Read(p []byte) (int, error)
+    func (s *Conn) Timeout() bool
+    func (s *Conn) Write(p []byte) (int, error)
+type Pool
+    func NewPool(max, timeout int, factory func() (net.Conn, error)) *Pool
+    func (s *Pool) Close()
+    func (s *Pool) Get() (*Conn, error)
+    func (s *Pool) Put(conn1 *Conn)
 
+type Conn
+	Conn - Wrap of net.Conn
+
+	type Conn struct {
+	    // contains filtered or unexported fields
+	}
+
+func (s *Conn) Close() error
+	Close - Close the connection
+
+
+func (s *Conn) Read(p []byte) (int, error)
+	Read - Compatible io.Reader
+
+func (s *Conn) Timeout() bool
+	Timeout - Test the connection is timeout. return true/false.
+
+func (s *Conn) Write(p []byte) (int, error)
+	Write - Compatible io.Write
+
+type Pool
+	Pool - Please create Pool with function NewPool
+
+	type Pool struct {
+	    // contains filtered or unexported fields
+	}
+
+func NewPool(max, timeout int, factory func() (net.Conn, error)) *Pool
+	NewPool - Create a new Pool struct,and initialize it.
+
+	max - the max connection number.
+	timeout - the program will use it to set deadline value.
+	factory - wrap of net.Dial(...).
+
+func (s *Pool) Close()
+	Close - Close all connections in this Pool
+
+func (s *Pool) Get() (*Conn, error)
+	Get - Get a new connection from the Pool
+
+func (s *Pool) Put(conn1 *Conn)
+	Put - Put a connection back to the Pool
+```
 
 #### 安装教程
 
