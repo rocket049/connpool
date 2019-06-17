@@ -133,6 +133,8 @@ func (s *Pool) Put(conn1 *Conn) {
 
 //Close - Close all connections in this Pool
 func (s *Pool) Close() {
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	e := s.connections.Front()
 	if e.Value != nil {
 		conn := e.Value.(*Conn)
